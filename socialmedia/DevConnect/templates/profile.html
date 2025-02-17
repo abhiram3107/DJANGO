@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ profile.user.username }}'s Profile</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h2, h3 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+
+        .profile-info {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .profile-info p {
+            font-size: 18px;
+        }
+
+        .btn {
+            background-color: #5c6bc0;
+            border: none;
+            color: white;
+            width: 100%;
+            border-radius: 10px;
+            padding: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #3f51b5;
+        }
+
+        .link {
+            color: #5c6bc0;
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .link:hover {
+            color: #3f51b5;
+        }
+
+        .followers-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .followers-list li {
+            background-color: #2c2f36;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .followers-list a {
+            color: #5c6bc0;
+            text-decoration: none;
+        }
+
+        .followers-list a:hover {
+            color: #3f51b5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>{{ profile.user.username }}'s Profile</h2>
+        
+        <div class="profile-info">
+            <p><strong>Followers:</strong> {{ followers_count }}</p>
+            <p><strong>Following:</strong> {{ following_count }}</p>
+            <p><strong>Account Created:</strong> {{ profile.user.date_joined }}</p>
+        </div>
+
+        {% if user != profile.user %}
+            {% if is_following %}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="unfollow" class="btn">Unfollow</button>
+                </form>
+            {% else %}
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="follow" class="btn">Follow</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        <!-- Bio Section -->
+        <div class="profile-info">
+            <h3>Bio:</h3>
+            {% if bio_edit %}
+                <!-- Form to update bio if bio_edit is True -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <textarea name="bio" rows="4" class="form-control" required>{{ profile.bio }}</textarea><br>
+                    <button type="submit" class="btn">Save</button>
+                </form>
+            {% else %}
+                <!-- Display the bio as a text if not editing -->
+                <p>{{ profile.bio }}</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="bio_edit" class="btn">Edit Bio</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <!-- Followers List -->
+        <h3>Followers:</h3>
+        <ul class="followers-list">
+            {% for follower in followers %}
+                <li><a href="{% url 'author_profile' follower.id %}">{{ follower.username }}</a></li>
+            {% empty %}
+                <li>No followers yet.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'home' %}" class="link">Back to Home</a>
+    </div>
+
+    <!-- Bootstrap 5 JS (optional for some features like dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
